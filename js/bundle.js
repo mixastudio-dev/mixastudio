@@ -284,3 +284,84 @@ class TabsManager {
 document.addEventListener('DOMContentLoaded', () => {
   new TabsManager('.tabs-block');
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const accordionItems = document.querySelectorAll('.accordion-item');
+
+  if (accordionItems) {
+    accordionItems.forEach(item => {
+      const trigger = item.querySelector('.accordion-item-header');
+      const content = item.querySelector('.accordion-item-content');
+
+      trigger.addEventListener('click', function() {
+        const parent = this.parentNode;
+
+        if (parent.classList.contains('active')) {
+          parent.classList.remove('active');
+          content.style.height = '0';
+        } else {
+          document.querySelectorAll('.accordion-item').forEach(child => {
+            child.classList.remove('active');
+            child.querySelector('.accordion-item-content').style.height = '0';
+          });
+          parent.classList.add('active');
+          content.style.height = content.scrollHeight + 'px';
+        }
+      });
+    });
+  }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  const videoContainers = document.querySelectorAll('.testimonial-video');
+
+  videoContainers.forEach(container => {
+    const video = container.querySelector('video');
+    const playButton = container.querySelector('.play-video');
+
+    if (video && playButton) {
+      playButton.addEventListener('click', function() {
+        if (video.paused) {
+          video.play();
+          playButton.style.opacity = '0';
+          playButton.style.visibility = 'hidden';
+        } else {
+          video.pause();
+          playButton.style.opacity = '1';
+          playButton.style.visibility = 'visible';
+        }
+      });
+
+      video.addEventListener('ended', function() {
+        playButton.style.opacity = '1';
+        playButton.style.visibility = 'visible';
+      });
+
+      video.addEventListener('play', function() {
+        playButton.style.opacity = '0';
+        playButton.style.visibility = 'hidden';
+      });
+    }
+  });
+});
+
+function checkVisibility() {
+  const blocks = document.querySelectorAll('.animate-section');
+
+  blocks.forEach(block => {
+    const rect = block.getBoundingClientRect();
+    const isVisible = rect.top <= window.innerHeight && rect.bottom >= 0;
+
+    if (isVisible) {
+      setTimeout(() => {
+        block.classList.add('animated');
+      }, 300);
+    } else {
+      block.classList.remove('animated');
+    }
+  });
+}
+
+window.addEventListener('scroll', checkVisibility);
+window.addEventListener('load', checkVisibility);
