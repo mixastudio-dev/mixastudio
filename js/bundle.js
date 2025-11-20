@@ -1,0 +1,286 @@
+const header = document.querySelector('header');
+
+if (header) {
+  const toggleScrolledClass = () => {
+    if (window.scrollY > 0) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  };
+
+  window.addEventListener('scroll', toggleScrolledClass);
+  toggleScrolledClass();
+}
+
+
+const popup = document.querySelector('.header-popup');
+const openButton = document.querySelector('.button-popup-menu');
+const closeButton = document.querySelector('.button-popup-close');
+
+function openPopup() {
+  popup.classList.add('show');
+}
+
+function closePopup() {
+  popup.classList.remove('show');
+}
+
+openButton.addEventListener('click', openPopup);
+closeButton.addEventListener('click', closePopup);
+
+popup.addEventListener('click', function(e) {
+  if (e.target === popup) {
+    closePopup();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && popup.classList.contains('show')) {
+    closePopup();
+  }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const steps = document.querySelectorAll('.quiz-step');
+  let currentStep = 0;
+  let isTransitioning = false;
+
+  showStep(currentStep);
+
+  document.querySelectorAll('.quiz-answer').forEach(answer => {
+    answer.addEventListener('click', function() {
+      if (isTransitioning) return;
+
+      isTransitioning = true;
+
+      const radio = this.querySelector('input[type="radio"]');
+      if (radio) {
+        radio.checked = true;
+
+        setTimeout(() => {
+          if (currentStep < steps.length - 1) {
+            currentStep++;
+            showStep(currentStep);
+          }
+          isTransitioning = false;
+        }, 300);
+      } else {
+        isTransitioning = false;
+      }
+    });
+  });
+
+  document.querySelectorAll('.input-wrapper').forEach(wrapper => {
+    const checkbox = wrapper.querySelector('input[type="checkbox"]');
+    const label = wrapper.querySelector('label');
+
+    if (checkbox && label) {
+      wrapper.addEventListener('click', function(e) {
+        if (e.target !== checkbox) {
+          checkbox.checked = !checkbox.checked;
+        }
+      });
+    }
+  });
+
+  const phoneInput = document.querySelector('input[type="tel"]');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+
+      if (value.startsWith('7') || value.startsWith('8')) {
+        value = value.substring(1);
+      }
+
+      if (value.length > 10) {
+        value = value.substring(0, 10);
+      }
+
+      let formattedValue = '+7 (';
+
+      if (value.length > 0) {
+        formattedValue += value.substring(0, 3);
+      }
+      if (value.length > 3) {
+        formattedValue += ') ' + value.substring(3, 6);
+      }
+      if (value.length > 6) {
+        formattedValue += '-' + value.substring(6, 8);
+      }
+      if (value.length > 8) {
+        formattedValue += '-' + value.substring(8, 10);
+      }
+
+      e.target.value = formattedValue;
+    });
+
+    phoneInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && this.value.length <= 4) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  function isValidPhone(phone) {
+    const digits = phone.replace(/\D/g, '');
+    return digits.length === 11;
+  }
+
+  function showStep(stepIndex) {
+    steps.forEach((step, index) => {
+      step.style.display = index === stepIndex ? 'block' : 'none';
+    });
+  }
+
+  function validateStep5() {
+    const step5 = document.querySelector('.quiz-step-5');
+    const inputs = step5.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"]');
+    const consentCheckbox = step5.querySelector('input[type="checkbox"]');
+
+    let isValid = true;
+
+    inputs.forEach(input => {
+      input.classList.remove('invalid');
+    });
+    if (consentCheckbox) {
+      consentCheckbox.parentElement.classList.remove('invalid');
+    }
+
+    inputs.forEach(input => {
+      if (input.type === 'tel') {
+        if (!isValidPhone(input.value)) {
+          isValid = false;
+          input.classList.add('invalid');
+        }
+      } else if (input.type === 'email') {
+        if (input.value.trim() === '' || !isValidEmail(input.value)) {
+          isValid = false;
+          input.classList.add('invalid');
+        }
+      } else if (input.type === 'text') {
+        const submitButton = step5.querySelector('input[type="submit"]');
+        if (input !== submitButton && input.value.trim() === '') {
+          isValid = false;
+          input.classList.add('invalid');
+        }
+      }
+    });
+
+    if (consentCheckbox && !consentCheckbox.checked) {
+      isValid = false;
+      consentCheckbox.parentElement.classList.add('invalid');
+    }
+
+    return isValid;
+  }
+
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      if (currentStep === steps.length - 1) {
+        const isValid = validateStep5();
+
+        if (!isValid) {
+          e.preventDefault();
+          const firstInvalid = document.querySelector('.quiz-step-5 .invalid');
+          if (firstInvalid) {
+            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      } else {
+        e.preventDefault();
+      }
+    });
+  }
+
+  const step5Inputs = document.querySelectorAll('.quiz-step-5 input');
+  step5Inputs.forEach(input => {
+    input.addEventListener('input', function() {
+      this.classList.remove('invalid');
+
+      if (this.type === 'checkbox') {
+        this.parentElement.classList.remove('invalid');
+      }
+    });
+  });
+});
+
+
+class TabsManager {
+  constructor(containerSelector) {
+    this.container = document.querySelector(containerSelector);
+    if (!this.container) return;
+
+    this.tabButtons = this.container.querySelectorAll('.nav-button');
+    this.tabPanels = this.container.querySelectorAll('.tab-panel');
+    this.tabImage = this.container.querySelector('.tab-panel-image img');
+    this.isAnimating = false;
+    this.currentTab = 1;
+
+    this.rotationOffsets = {
+      1: -14,   // первый таб -14°
+      2: 14,    // второй таб +14°
+      3: 38,    // третий таб +38°
+      4: 82,    // четвертый таб +82°
+      5: 106,   // пятый таб +106°
+      6: 132,   // шестой таб +132°
+      7: 164    // седьмой таб +164°
+    };
+
+    this.init();
+  }
+
+  init() {
+    this.tabButtons[0].classList.add('active');
+    this.tabPanels[0].classList.add('active');
+    this.tabImage.style.transform = `rotate(${this.rotationOffsets[1]}deg)`;
+
+    this.tabButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        if (this.isAnimating) return;
+        this.switchTab(parseInt(e.target.dataset.tabId));
+      });
+    });
+  }
+
+  switchTab(targetTabId) {
+    const targetButton = this.container.querySelector(`.nav-button[data-tab-id="${targetTabId}"]`);
+    const targetPanel = this.container.querySelector(`.tab-panel[data-tab-id="${targetTabId}"]`);
+
+    if (targetButton.classList.contains('active')) return;
+
+    this.isAnimating = true;
+
+    this.tabButtons.forEach(btn => btn.classList.remove('active'));
+    this.tabPanels.forEach(panel => panel.classList.remove('active'));
+
+    this.rotateImage(this.rotationOffsets[targetTabId]);
+
+    targetButton.classList.add('active');
+    targetPanel.classList.add('active');
+
+    setTimeout(() => {
+      this.isAnimating = false;
+    }, 600);
+  }
+
+  rotateImage(rotation) {
+    this.tabImage.style.transition = 'transform 0.6s';
+    this.tabImage.style.transform = `rotate(${rotation}deg)`;
+  }
+
+  setRotationOffset(tabId, degrees) {
+    this.rotationOffsets[tabId] = degrees;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  new TabsManager('.tabs-block');
+});
