@@ -356,7 +356,7 @@ function checkVisibility() {
     if (isVisible) {
       setTimeout(() => {
         block.classList.add('animated');
-      }, 300);
+      }, 500);
     } else {
       block.classList.remove('animated');
     }
