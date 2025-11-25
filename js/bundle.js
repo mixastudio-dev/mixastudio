@@ -365,3 +365,62 @@ function checkVisibility() {
 
 window.addEventListener('scroll', checkVisibility);
 window.addEventListener('load', checkVisibility);
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const filterItems = document.querySelectorAll('.filter-item');
+
+  filterItems.forEach(item => {
+    item.addEventListener('click', function() {
+      filterItems.forEach(filter => {
+        filter.classList.remove('active');
+      });
+
+      this.classList.add('active');
+    });
+  });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const wrapper = document.querySelector('.running-line-wrapper');
+  const runningLine = document.querySelector('.running-line');
+
+  for (let i = 0; i < 10; i++) {
+    const clone = runningLine.cloneNode(true);
+    wrapper.appendChild(clone);
+  }
+});
+
+document.querySelectorAll('.benefits-cards').forEach(container => {
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  container.addEventListener('mousedown', (e) => {
+    isDown = true;
+    container.classList.add('grabbing');
+    container.style.cursor = 'grabbing';
+    startX = e.pageX - container.offsetLeft;
+    scrollLeft = container.scrollLeft;
+    e.preventDefault();
+  });
+
+  container.addEventListener('mouseleave', () => {
+    isDown = false;
+    container.classList.remove('grabbing');
+  });
+
+  container.addEventListener('mouseup', () => {
+    isDown = false;
+    container.classList.remove('grabbing');
+  });
+
+  container.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - container.offsetLeft;
+    const walk = (x - startX) * 1;
+    container.scrollLeft = scrollLeft - walk;
+  });
+});
