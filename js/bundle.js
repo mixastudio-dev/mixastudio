@@ -386,6 +386,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const wrapper = document.querySelector('.running-line-wrapper');
   const runningLine = document.querySelector('.running-line');
 
+  if (!wrapper || !runningLine) {
+    return;
+  }
+
   for (let i = 0; i < 10; i++) {
     const clone = runningLine.cloneNode(true);
     wrapper.appendChild(clone);
