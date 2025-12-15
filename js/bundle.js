@@ -350,21 +350,24 @@ function checkVisibility() {
   const blocks = document.querySelectorAll('.animate-section');
 
   blocks.forEach(block => {
+    if (block.hasAttribute('data-animated')) {
+      return;
+    }
+
     const rect = block.getBoundingClientRect();
     const isVisible = rect.top <= window.innerHeight && rect.bottom >= 0;
 
     if (isVisible) {
       setTimeout(() => {
         block.classList.add('animated');
+        block.setAttribute('data-animated', 'true');
       }, 500);
-    } else {
-      block.classList.remove('animated');
     }
   });
 }
 
-window.addEventListener('scroll', checkVisibility);
 window.addEventListener('load', checkVisibility);
+window.addEventListener('scroll', checkVisibility);
 
 
 document.addEventListener('DOMContentLoaded', function() {
