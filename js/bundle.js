@@ -431,3 +431,43 @@ document.querySelectorAll('.benefits-cards').forEach(container => {
     container.scrollLeft = scrollLeft - walk;
   });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const fixedWidgets = document.querySelector('.fixed-widgets');
+  const buttonWidgets = document.querySelector('.button-widgets');
+  const widgetsList = document.querySelector('.widgets-list');
+
+  if (!buttonWidgets || !widgetsList) return;
+
+  function toggleWidgetsList() {
+    const isActive = buttonWidgets.classList.contains('active');
+
+    if (isActive) {
+      buttonWidgets.classList.remove('active');
+      widgetsList.classList.remove('active');
+    } else {
+      buttonWidgets.classList.add('active');
+      widgetsList.classList.add('active');
+    }
+  }
+
+  buttonWidgets.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleWidgetsList();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!fixedWidgets.contains(e.target) && widgetsList.classList.contains('active')) {
+      buttonWidgets.classList.remove('active');
+      widgetsList.classList.remove('active');
+    }
+  });
+
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && widgetsList.classList.contains('active')) {
+      buttonWidgets.classList.remove('active');
+      widgetsList.classList.remove('active');
+    }
+  });
+});
